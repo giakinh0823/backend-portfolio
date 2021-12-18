@@ -69,6 +69,7 @@ class PhotoUploadDetail(APIView):
         photo = Photo.objects.get(id=pk)
         if photo:
             cloudinary.uploader.destroy(photo.image.public_id, invalidate=True)
+            photo.delete()
             return Response({"success":"Xóa hình ảnh thành công"},status=status.HTTP_200_OK)
         return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
     
