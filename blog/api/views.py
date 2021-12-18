@@ -85,7 +85,6 @@ class PhotoRemove(APIView):
         if data:
             try:
                 for item in data:
-                    print(item)
                     id = int(item["id"])
                     try:
                         photo = Photo.objects.get(id=id)
