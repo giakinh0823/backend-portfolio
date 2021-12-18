@@ -107,6 +107,70 @@ class TopicViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filter_class = TopicFilter
     filterset_fields = "__all__"
+    
+    
+class TopicDetailViewSet(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request,slug, format=None):
+        try:
+            topic = Topic.objects.get(slug=slug)
+            if topic:
+                serializer = TopicSerializer(topic)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "Không tìm thấy topic"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+
+class TopicRemoveViewSet(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request,pk, format=None):
+        try:
+            topic = Topic.objects.get(id=pk)
+            if topic:
+                serializer = TopicSerializer(topic)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "Không tìm thấy topic"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request,pk, format=None):
+        try:
+            topic = Topic.objects.get(id=pk)
+            if topic:
+                # topic.is_remove = True
+                # topic.save()
+                topic.delete()
+                serializer = TopicSerializer(topic)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "Không tìm thấy topic"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+
+class TopicRemoveAllViewSet(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, format=None):
+        topics = Topic.objects.all()
+        serializer = TopicSerializer(topics, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request, format=None):
+        data = request.data
+        print(data)
+        if data:
+            for item in data:
+                try:
+                    topic = Topic.objects.get(id=item)
+                    if topic:
+                        # topic.is_remove = True
+                        # topic.save()
+                        topic.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Xóa topic thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+
 
 # Blog cho admin
 class BlogViewSet(viewsets.ModelViewSet):

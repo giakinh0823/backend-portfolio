@@ -11,7 +11,7 @@ class BlogFilter(django_filters.FilterSet):
 class TopicFilter(django_filters.FilterSet):
     class Meta:
         model = Topic
-        fields = ['name', 'slug']
+        fields = ['name', 'slug', 'is_remove']
         
 
 class PhotoFilter(django_filters.FilterSet):

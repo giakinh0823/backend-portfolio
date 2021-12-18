@@ -23,9 +23,23 @@ class Tag(models.Model):
 class Topic(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    is_remove = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        slug = slugify(self.name)
+        qs = Topic.objects.filter(slug=slug)
+        if qs:
+            exists = qs.exists()
+            if exists:
+                self.slug = "%s-%s" % (slug, qs.first().id)
+        else:
+            self.slug = slug
+        return super().save(*args, **kwargs)
+
+        
 
 
 class Blog(models.Model):
@@ -44,3 +58,14 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        slug = slugify(self.title)
+        qs = Topic.objects.filter(slug=slug)
+        if qs:
+            exists = qs.exists()
+            if exists:
+                self.slug = "%s-%s" % (slug, qs.first().id)
+        else:
+            self.slug = slug
+        return super().save(*args, **kwargs)
