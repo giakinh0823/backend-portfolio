@@ -14,6 +14,8 @@ router.register(r'photos', views.PhotoViewSet, basename='admin_photos')
 urlpatterns = [
     path('admin/', include(router.urls)),
     path('admin/upload/', views.PhotoUpload.as_view(), name='photo_upload'),
+    path('admin/upload/remove/', views.PhotoRemove.as_view(), name='photo_upload_remove'),
+    path('admin/upload/<int:pk>/', views.PhotoUploadDetail.as_view(), name='photo_upload_detail'),
     path('blogs/', views.BlogPublicViewSet.as_view(), name='blogs'),
     path('topics/', views.TopicPublicViewSet.as_view(), name='topics'),
 ]

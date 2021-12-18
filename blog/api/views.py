@@ -14,7 +14,7 @@ from .filtersSet import BlogFilter, PhotoFilter, TagFilter, TopicFilter
 from .pageSerializers import ResultsSetPagination, StandardResultsSetPagination
 from .serializers import (BlogSerializer, BlogSerializerReadOnly,
                           PhotoSerializer, TagSerializer, TopicSerializer)
-import json
+import cloudinary
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -53,6 +53,51 @@ class PhotoUpload(APIView):
             data.save()
             return Response({"success":"Tải hình ảnh thành công", "url": str(data.image.url) },status=status.HTTP_201_CREATED)
         return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+    
+class PhotoUploadDetail(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request,pk, format=None):
+        photo = Photo.objects.get(id=pk)
+        if photo:
+            serializer = PhotoSerializer(photo)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            
+            
+    def delete(self, request,pk, format=None):
+        photo = Photo.objects.get(id=pk)
+        if photo:
+            cloudinary.uploader.destroy(photo.image.public_id, invalidate=True)
+            return Response({"success":"Xóa hình ảnh thành công"},status=status.HTTP_200_OK)
+        return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+    
+class PhotoRemove(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, format=None):
+        photos = Photo.objects.all()
+        serializer = PhotoSerializer(photos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            try:
+                for item in data:
+                    print(item)
+                    id = int(item["id"])
+                    try:
+                        photo = Photo.objects.get(id=id)
+                        if photo:
+                            cloudinary.uploader.destroy(photo.image.public_id, invalidate=True)
+                            photo.delete()
+                    except:
+                        photo = None
+                return Response({"success":"Xóa hình ảnh thành công"},status=status.HTTP_200_OK)
+            except:
+                return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            
 
 # Topic cho admin
 class TopicViewSet(viewsets.ModelViewSet):
