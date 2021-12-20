@@ -23,6 +23,7 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 class BlogSerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(required=False)
     class Meta:
         model = Blog
         fields = "__all__"
@@ -30,8 +31,9 @@ class BlogSerializer(serializers.ModelSerializer):
 
 class BlogSerializerReadOnly(serializers.ModelSerializer):
     topics = TopicSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
-    image = PhotoSerializer()
+    image = PhotoSerializer(read_only=True)
     class Meta:
         model = Blog
         fields = "__all__"

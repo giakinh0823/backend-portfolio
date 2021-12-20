@@ -16,6 +16,7 @@ from .serializers import (BlogSerializer, BlogSerializerReadOnly,
                           PhotoSerializer, TagSerializer, TopicSerializer)
 import cloudinary
 
+#Tag admin
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -24,7 +25,32 @@ class TagViewSet(viewsets.ModelViewSet):
     filter_class = TagFilter
     filterset_fields = "__all__"
     
-
+class TagRemoveAllViewSet(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, format=None):
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request, format=None):
+        data = request.data
+        print(data)
+        if data:
+            for item in data:
+                try:
+                    tag = Tag.objects.get(id=item)
+                    if tag:
+                        # topic.is_remove = True
+                        # topic.save()
+                        tag.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Xóa tag thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+    
+    
+#Photo admin
 class PhotoViewSet(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
