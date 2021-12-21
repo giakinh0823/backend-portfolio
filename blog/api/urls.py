@@ -19,6 +19,9 @@ urlpatterns = [
     path('admin/upload/<int:pk>/', views.PhotoUploadDetail.as_view(), name='photo_upload_detail'),
     
     #Blog
+    path('admin/blog/<slug:slug>/', views.BlogDetailViewSet.as_view(), name='blog_slug'),
+    path('admin/getBlogs/', views.BlogPublicViewSet.as_view(), name='blogs_admin'),
+    path('admin/blogs/remove/', views.BlogRemoveAllViewSet.as_view(), name='blog_remove'),
     path('blogs/', views.BlogPublicViewSet.as_view(), name='blogs'),
     
     #Topic

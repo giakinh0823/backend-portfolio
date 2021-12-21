@@ -34,7 +34,6 @@ class TagRemoveAllViewSet(APIView):
         
     def post(self, request, format=None):
         data = request.data
-        print(data)
         if data:
             for item in data:
                 try:
@@ -182,7 +181,6 @@ class TopicRemoveAllViewSet(APIView):
         
     def post(self, request, format=None):
         data = request.data
-        print(data)
         if data:
             for item in data:
                 try:
@@ -242,3 +240,39 @@ class BlogPublicViewSet(generics.GenericAPIView):
         paginate_queryset = self.paginate_queryset(query)
         serializer = BlogSerializerReadOnly(paginate_queryset, many=True)
         return self.get_paginated_response(serializer.data)
+
+
+class BlogDetailViewSet(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request,slug, format=None):
+        try:
+            blog = Blog.objects.get(slug=slug)
+            if blog:
+                serializer = BlogSerializerReadOnly(blog)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "Không tìm thấy topic"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+
+class BlogRemoveAllViewSet(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, format=None):
+        blogs = Blog.objects.all()
+        serializer = TopicSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    blog = Blog.objects.get(id=item)
+                    if blog:
+                        # topic.is_remove = True
+                        # topic.save()
+                        blog.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Xóa blog thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
