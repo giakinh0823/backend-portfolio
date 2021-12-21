@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 
+import django_heroku
+import cloudinary
 from pathlib import Path
 import os
 
@@ -101,10 +103,22 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'blog',
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'blog',
+        'NAME': 'Blog',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://giakinh0823:Giakinh0823@blog.nahnk.mongodb.net/blog?retryWrites=true&w=majority'
+        }
     }
 }
 
@@ -179,19 +193,16 @@ REST_FRAMEWORK = {
 
 
 # cloudinary
-import cloudinary
 CLOUDINARY_URL = "cloudinary://551591186755475:vrlhMJgkLm21pw-qAxyqBf-JfoQ@giakinh0823"
 
-cloudinary.config( 
-  cloud_name = "giakinh0823", 
-  api_key = "551591186755475", 
-  api_secret = "vrlhMJgkLm21pw-qAxyqBf-JfoQ",
-  secure = True
+cloudinary.config(
+    cloud_name="giakinh0823",
+    api_key="551591186755475",
+    api_secret="vrlhMJgkLm21pw-qAxyqBf-JfoQ",
+    secure=True
 )
 
-import django_heroku
 django_heroku.settings(locals())
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
