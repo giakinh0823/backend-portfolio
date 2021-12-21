@@ -35,4 +35,10 @@ urlpatterns = [
     
     #admin
     path('admin/', include(router.urls)),
+    
+    
+    #public
+    path('tags/', views.TagPublicViewSet.as_view(), name='tag_public'),
+    path('topics/', views.TopicPublicViewSet.as_view(), name='topic_public'),
+    path('blogs/', views.BlogPublicViewSet.as_view(), name='blog_public'),
 ]

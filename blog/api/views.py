@@ -20,13 +20,30 @@ import cloudinary
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
     filter_class = TagFilter
     filterset_fields = "__all__"
     
-class TagRemoveAllViewSet(APIView):
+
+# Tag cho người dùng
+class TagPublicViewSet(generics.GenericAPIView):
+    queryset = Tag.objects.all()
     permission_classes = [AllowAny]
+    pagination_class = ResultsSetPagination
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_class = TagFilter
+    filterset_fields = "__all__"
+    ordering_fields = ['title', 'created_at'] 
+
+    def get(self, request, format=None):
+        query = self.filter_queryset(self.get_queryset())
+        paginate_queryset = self.paginate_queryset(query)
+        serializer = TagSerializer(paginate_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+
+class TagRemoveAllViewSet(APIView):
+    permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
@@ -53,7 +70,7 @@ class TagRemoveAllViewSet(APIView):
 class PhotoViewSet(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filter_class = PhotoFilter
     filterset_fields = "__all__"
@@ -62,7 +79,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
 
 #Upload photo
 class PhotoUpload(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         photos = Photo.objects.all()
         serializer = PhotoSerializer(photos, many=True)
@@ -80,7 +97,7 @@ class PhotoUpload(APIView):
         return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
     
 class PhotoUploadDetail(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     
     def get(self, request,pk, format=None):
         photo = Photo.objects.get(id=pk)
@@ -99,7 +116,7 @@ class PhotoUploadDetail(APIView):
         return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
     
 class PhotoRemove(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         photos = Photo.objects.all()
         serializer = PhotoSerializer(photos, many=True)
@@ -128,14 +145,14 @@ class PhotoRemove(APIView):
 class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
     filter_class = TopicFilter
     filterset_fields = "__all__"
     
     
 class TopicDetailViewSet(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request,slug, format=None):
         try:
             topic = Topic.objects.get(slug=slug)
@@ -147,7 +164,7 @@ class TopicDetailViewSet(APIView):
             return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
 
 class TopicRemoveViewSet(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request,pk, format=None):
         try:
             topic = Topic.objects.get(id=pk)
@@ -173,7 +190,7 @@ class TopicRemoveViewSet(APIView):
         
 
 class TopicRemoveAllViewSet(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         topics = Topic.objects.all()
         serializer = TopicSerializer(topics, many=True)
@@ -194,18 +211,8 @@ class TopicRemoveAllViewSet(APIView):
             return Response({"success": "Xóa topic thành công"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
-
-
-# Blog cho admin
-class BlogViewSet(viewsets.ModelViewSet):
-    queryset = Blog.objects.all()
-    serializer_class = BlogSerializer
-    permission_classes = [AllowAny]
-    pagination_class = ResultsSetPagination
-    filter_backends = [DjangoFilterBackend]
-    filter_class = BlogFilter
-    filterset_fields = "__all__"
-
+        
+        
 
 # Topic cho người dùng
 class TopicPublicViewSet(generics.ListAPIView):
@@ -222,6 +229,17 @@ class TopicPublicViewSet(generics.ListAPIView):
         paginate_queryset = self.paginate_queryset(query)
         serializer = TopicSerializer(paginate_queryset, many=True)
         return self.get_paginated_response(serializer.data)
+
+
+# Blog cho admin
+class BlogViewSet(viewsets.ModelViewSet):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_class = BlogFilter
+    filterset_fields = "__all__"
+    ordering_fields = ['title', 'created_at']
 
 
 # Blog cho người dùng
@@ -243,7 +261,7 @@ class BlogPublicViewSet(generics.GenericAPIView):
 
 
 class BlogDetailViewSet(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request,slug, format=None):
         try:
             blog = Blog.objects.get(slug=slug)
@@ -255,7 +273,7 @@ class BlogDetailViewSet(APIView):
             return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
 
 class BlogRemoveAllViewSet(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         blogs = Blog.objects.all()
         serializer = TopicSerializer(blogs, many=True)
