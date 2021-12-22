@@ -11,7 +11,7 @@ from autoslug import AutoSlugField
 
 class Photo(models.Model):
     image = CloudinaryField('image')
-    url = models.CharField(max_length=2000, blank=True, null=True)
+    url = models.CharField(max_length=255, blank=True, null=True)
 
 
 class Tag(models.Model):
@@ -37,8 +37,8 @@ class Blog(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     topics = models.ManyToManyField(Topic, related_name="topics")
     tags = models.ManyToManyField(Tag, related_name="tags")
-    title = models.CharField(max_length=2000)
-    description = models.CharField(max_length=2000)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
     image = models.ForeignKey(
         Photo, on_delete=models.CASCADE, blank=True, null=True)
     slug = AutoSlugField(populate_from='title',max_length=225, unique=True, null=True, blank=True)
