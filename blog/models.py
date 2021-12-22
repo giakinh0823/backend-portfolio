@@ -37,7 +37,7 @@ class Blog(models.Model):
     topics = models.ManyToManyField(Topic, related_name="topics")
     tags = models.ManyToManyField(Tag, related_name="tags")
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     image = models.ForeignKey(
         Photo, on_delete=models.CASCADE, blank=True, null=True)
     slug = AutoSlugField(populate_from='title', unique=True, null=True, blank=True)
