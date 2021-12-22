@@ -25,7 +25,7 @@ class Tag(models.Model):
 
 class Topic(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
-    slug = AutoSlugField(populate_from='name',max_length=2000,
+    slug = AutoSlugField(populate_from='name',max_length=225,
                          unique=True, null=True, blank=True)
     is_public = models.BooleanField(default=False, null=True, blank=True)
     is_remove = models.BooleanField(default=False, null=True, blank=True)
@@ -41,7 +41,7 @@ class Blog(models.Model):
     description = models.CharField(max_length=2000)
     image = models.ForeignKey(
         Photo, on_delete=models.CASCADE, blank=True, null=True)
-    slug = AutoSlugField(populate_from='title',max_length=2000, unique=True, null=True, blank=True)
+    slug = AutoSlugField(populate_from='title',max_length=225, unique=True, null=True, blank=True)
     content = models.TextField()
     is_remove = models.BooleanField(default=False)
     is_public = models.BooleanField(default=False)
