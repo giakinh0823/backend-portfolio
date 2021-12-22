@@ -18,7 +18,7 @@ import cloudinary
 
 #Tag admin
 class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.filter(is_remove=False)
     serializer_class = TagSerializer
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
@@ -28,7 +28,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 # Tag cho người dùng
 class TagPublicViewSet(generics.GenericAPIView):
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.filter(is_remove=False, is_public=True)
     permission_classes = [AllowAny]
     pagination_class = ResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -45,7 +45,7 @@ class TagPublicViewSet(generics.GenericAPIView):
 class TagRemoveAllViewSet(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, format=None):
-        tags = Tag.objects.all()
+        tags = Tag.objects.filter(is_remove=False)
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
@@ -56,12 +56,64 @@ class TagRemoveAllViewSet(APIView):
                 try:
                     tag = Tag.objects.get(id=item)
                     if tag:
-                        # topic.is_remove = True
-                        # topic.save()
+                        tag.is_remove = True
+                        tag.save()
+                        # tag.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Xóa tag thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+
+class TagRemoveForeverViewSet(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request, format=None):
+        tags = Tag.objects.filter(is_remove=True)
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    tag = Tag.objects.get(id=item)
+                    if tag:
                         tag.delete()
                 except:
                     return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
             return Response({"success": "Xóa tag thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+class TagAdminTrashViewSet(generics.GenericAPIView):
+    queryset = Tag.objects.filter(is_remove=True)
+    permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_class =TagFilter
+    filterset_fields = "__all__"
+    ordering_fields = ['name']
+
+    permission_classes = [IsAdminUser]
+    def get(self, request, format=None):
+        query = self.filter_queryset(self.get_queryset())
+        serializer = TagSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    tag = Tag.objects.get(id=item)
+                    if tag:
+                        tag.is_remove = False
+                        tag.save()
+                        # blog.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Restore tag thành công"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
     
@@ -143,7 +195,7 @@ class PhotoRemove(APIView):
 
 # Topic cho admin
 class TopicViewSet(viewsets.ModelViewSet):
-    queryset = Topic.objects.all()
+    queryset = Topic.objects.filter(is_remove=False)
     serializer_class = TopicSerializer
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
@@ -179,9 +231,9 @@ class TopicRemoveViewSet(APIView):
         try:
             topic = Topic.objects.get(id=pk)
             if topic:
-                # topic.is_remove = True
-                # topic.save()
-                topic.delete()
+                topic.is_remove = True
+                topic.save()
+                # topic.delete()
                 serializer = TopicSerializer(topic)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"error": "Không tìm thấy topic"},status=status.HTTP_400_BAD_REQUEST)
@@ -192,7 +244,7 @@ class TopicRemoveViewSet(APIView):
 class TopicRemoveAllViewSet(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, format=None):
-        topics = Topic.objects.all()
+        topics = Topic.objects.filter(is_remove=False)
         serializer = TopicSerializer(topics, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
@@ -203,9 +255,9 @@ class TopicRemoveAllViewSet(APIView):
                 try:
                     topic = Topic.objects.get(id=item)
                     if topic:
-                        # topic.is_remove = True
-                        # topic.save()
-                        topic.delete()
+                        topic.is_remove = True
+                        topic.save()
+                        # topic.delete()
                 except:
                     return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
             return Response({"success": "Xóa topic thành công"}, status=status.HTTP_200_OK)
@@ -213,10 +265,62 @@ class TopicRemoveAllViewSet(APIView):
             return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
         
         
+        
+class TopicRemoveForeverViewSet(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request, format=None):
+        topics = Topic.objects.filter(is_remove=True)
+        serializer = TopicSerializer(topics, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    topic = Topic.objects.get(id=item)
+                    if topic:
+                        topic.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Xóa topic thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+class TopicAdminTrashViewSet(generics.GenericAPIView):
+    queryset = Topic.objects.filter(is_remove=True)
+    permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_class =TopicFilter
+    filterset_fields = "__all__"
+    ordering_fields = ['name']
+
+    def get(self, request, format=None):
+        query = self.filter_queryset(self.get_queryset())
+        serializer = TopicSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    topic = Topic.objects.get(id=item)
+                    if topic:
+                        topic.is_remove = False
+                        topic.save()
+                        # blog.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Restore topic thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
 # Topic cho người dùng
 class TopicPublicViewSet(generics.ListAPIView):
-    queryset = Topic.objects.all()
+    queryset = Topic.objects.filter(is_remove=False, is_public=True)
     permission_classes = [AllowAny]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -233,7 +337,7 @@ class TopicPublicViewSet(generics.ListAPIView):
 
 # Blog cho admin
 class BlogViewSet(viewsets.ModelViewSet):
-    queryset = Blog.objects.all()
+    queryset = Blog.objects.filter(is_remove=False)
     serializer_class = BlogSerializer
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -244,7 +348,7 @@ class BlogViewSet(viewsets.ModelViewSet):
 
 # Blog cho người dùng
 class BlogPublicViewSet(generics.GenericAPIView):
-    queryset = Blog.objects.all()
+    queryset = Blog.objects.filter(is_remove=False, is_public=True)
     permission_classes = [AllowAny]
     pagination_class = ResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -258,6 +362,56 @@ class BlogPublicViewSet(generics.GenericAPIView):
         paginate_queryset = self.paginate_queryset(query)
         serializer = BlogSerializerReadOnly(paginate_queryset, many=True)
         return self.get_paginated_response(serializer.data)
+    
+# admin
+class BlogAdminViewSet(generics.GenericAPIView):
+    queryset = Blog.objects.filter(is_remove=False).order_by('-created_at')
+    permission_classes = [IsAdminUser]
+    pagination_class = ResultsSetPagination
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_class =BlogFilter
+    filterset_fields = "__all__"
+    ordering_fields = ['title', 'created_at']
+    
+
+    def get(self, request, format=None):
+        query = self.filter_queryset(self.get_queryset())
+        paginate_queryset = self.paginate_queryset(query)
+        serializer = BlogSerializerReadOnly(paginate_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+    
+# Trash Blog
+class BlogAdminTrashViewSet(generics.GenericAPIView):
+    queryset = Blog.objects.filter(is_remove=True).order_by('-updated_at')
+    permission_classes = [IsAdminUser]
+    pagination_class = ResultsSetPagination
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_class =BlogFilter
+    filterset_fields = "__all__"
+    ordering_fields = ['title', 'created_at']
+    
+
+    def get(self, request, format=None):
+        query = self.filter_queryset(self.get_queryset())
+        paginate_queryset = self.paginate_queryset(query)
+        serializer = BlogSerializerReadOnly(paginate_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+    
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    blog = Blog.objects.get(id=item)
+                    if blog:
+                        blog.is_remove = False
+                        blog.save()
+                        # blog.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Restore blog thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
 
 
 class BlogDetailViewSet(APIView):
@@ -275,7 +429,7 @@ class BlogDetailViewSet(APIView):
 class BlogRemoveAllViewSet(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, format=None):
-        blogs = Blog.objects.all()
+        blogs = Blog.objects.filter(is_remove=False)
         serializer = TopicSerializer(blogs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
@@ -286,8 +440,30 @@ class BlogRemoveAllViewSet(APIView):
                 try:
                     blog = Blog.objects.get(id=item)
                     if blog:
-                        # topic.is_remove = True
-                        # topic.save()
+                        blog.is_remove = True
+                        blog.save()
+                        # blog.delete()
+                except:
+                    return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Xóa blog thành công"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Đã có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)
+        
+
+class BlogRemoveForeverViewSet(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request, format=None):
+        blogs = Blog.objects.filter(is_remove=True)
+        serializer = TopicSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request, format=None):
+        data = request.data
+        if data:
+            for item in data:
+                try:
+                    blog = Blog.objects.get(id=item)
+                    if blog:
                         blog.delete()
                 except:
                     return Response({"error": "Có lỗi xảy ra"},status=status.HTTP_400_BAD_REQUEST)

@@ -20,17 +20,23 @@ urlpatterns = [
     
     #Blog
     path('admin/blog/<slug:slug>/', views.BlogDetailViewSet.as_view(), name='blog_slug'),
-    path('admin/getBlogs/', views.BlogPublicViewSet.as_view(), name='blogs_admin'),
+    path('admin/getBlogs/', views.BlogAdminViewSet.as_view(), name='blogs_admin'),
+    path('admin/getBlogs/trash/', views.BlogAdminTrashViewSet.as_view(), name='blogs_trash_admin'),
     path('admin/blogs/remove/', views.BlogRemoveAllViewSet.as_view(), name='blog_remove'),
+    path('admin/blogs/remove-forever/', views.BlogRemoveForeverViewSet.as_view(), name='blog_remove-forever'),
     path('blogs/', views.BlogPublicViewSet.as_view(), name='blogs'),
     
     #Topic
     path('admin/topic/<slug:slug>/', views.TopicDetailViewSet.as_view(), name='topic_slug'),
     path('admin/topics/remove/', views.TopicRemoveAllViewSet.as_view(), name='topic_remove'),
+    path('admin/topics/remove-forever/', views.TopicRemoveForeverViewSet.as_view(), name='topic_remove-forever'),
     path('admin/topics/remove/<int:pk>/', views.TopicRemoveViewSet.as_view(), name='topic_remove_slug'),
+    path('admin/topics/trash/', views.TopicAdminTrashViewSet.as_view(), name='topics_trash_admin'),
     path('topics/', views.TopicPublicViewSet.as_view(), name='topics'),
     
     #tag
+    path('admin/tags/trash/', views.TagAdminTrashViewSet.as_view(), name='tag_trash_admin'),
+    path('admin/tags/remove-forever/', views.TagRemoveForeverViewSet.as_view(), name='tag_remove-forever'),
     path('admin/tags/remove/', views.TagRemoveAllViewSet.as_view(), name='tag_remove'),
     
     #admin
