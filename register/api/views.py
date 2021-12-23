@@ -1,8 +1,8 @@
 
 from django.contrib.auth.models import User, Group
-from rest_framework import serializers, status, viewsets, permissions
+from rest_framework import serializers, status, viewsets, permissions, generics
 from rest_framework.response import Response
-from .serializers import UserSerializer, GroupSerializer, MyTokenObtainPairAdminSerializer
+from .serializers import UserSerializer, GroupSerializer, MyTokenObtainPairAdminSerializer, UserPublicSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -26,7 +26,22 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = "__all__"
     
+# User cho người dùng
+class UserPublicViewSet(generics.GenericAPIView):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserPublicSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = "__all__"
     
+    def get(self, request, format=None):
+        query = self.filter_queryset(self.get_queryset())
+        serializer = UserPublicSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class UserFromTokenViewSet(APIView):
     """
     API endpoint that allows users to be viewed or edited.
