@@ -30,7 +30,6 @@ class TagViewSet(viewsets.ModelViewSet):
 class TagPublicViewSet(generics.GenericAPIView):
     queryset = Tag.objects.filter(is_remove=False, is_public=True)
     permission_classes = [AllowAny]
-    pagination_class = ResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filter_class = TagFilter
     filterset_fields = "__all__"
@@ -38,9 +37,8 @@ class TagPublicViewSet(generics.GenericAPIView):
 
     def get(self, request, format=None):
         query = self.filter_queryset(self.get_queryset())
-        paginate_queryset = self.paginate_queryset(query)
-        serializer = TagSerializer(paginate_queryset, many=True)
-        return self.get_paginated_response(serializer.data)
+        serializer = TagSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TagRemoveAllViewSet(APIView):
     permission_classes = [IsAdminUser]
@@ -322,7 +320,6 @@ class TopicAdminTrashViewSet(generics.GenericAPIView):
 class TopicPublicViewSet(generics.ListAPIView):
     queryset = Topic.objects.filter(is_remove=False, is_public=True)
     permission_classes = [AllowAny]
-    pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filter_class = TopicFilter
     filterset_fields = "__all__"
@@ -330,9 +327,8 @@ class TopicPublicViewSet(generics.ListAPIView):
 
     def get(self, request, format=None):
         query = self.filter_queryset(self.get_queryset())
-        paginate_queryset = self.paginate_queryset(query)
-        serializer = TopicSerializer(paginate_queryset, many=True)
-        return self.get_paginated_response(serializer.data)
+        serializer = TopicSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Blog cho admin
