@@ -39,6 +39,17 @@ class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = "__all__"
+        
+        
+class BlogAdminSerializerReadOnly(serializers.ModelSerializer):
+    topics = TopicPublicSerializer(many=True, read_only=True)
+    tags = TagPublicSerializer(many=True, read_only=True)
+    author = UserPublicSerializer(read_only=True)
+    image = PhotoSerializer(read_only=True)
+
+    class Meta:
+        model = Blog
+        fields = "__all__"
 
 
 class BlogSerializerReadOnly(serializers.ModelSerializer):

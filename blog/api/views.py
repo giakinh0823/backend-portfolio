@@ -13,7 +13,7 @@ from rest_framework import filters
 from .filtersSet import BlogFilter, PhotoFilter, TagFilter, TopicFilter
 from .pageSerializers import ResultsSetPagination, StandardResultsSetPagination
 from .serializers import (BlogSerializer, BlogSerializerReadOnly,
-                          PhotoSerializer, TagSerializer, TopicSerializer, TagPublicSerializer, TopicPublicSerializer)
+                          PhotoSerializer, TagSerializer, TopicSerializer, TagPublicSerializer, TopicPublicSerializer, BlogAdminSerializerReadOnly)
 import cloudinary
 
 #Tag admin
@@ -373,7 +373,7 @@ class BlogAdminViewSet(generics.GenericAPIView):
     def get(self, request, format=None):
         query = self.filter_queryset(self.get_queryset())
         paginate_queryset = self.paginate_queryset(query)
-        serializer = BlogSerializerReadOnly(paginate_queryset, many=True)
+        serializer = BlogAdminSerializerReadOnly(paginate_queryset, many=True)
         return self.get_paginated_response(serializer.data)
     
 # Trash Blog
