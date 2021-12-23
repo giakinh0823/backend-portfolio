@@ -13,7 +13,7 @@ from rest_framework import filters
 from .filtersSet import BlogFilter, PhotoFilter, TagFilter, TopicFilter
 from .pageSerializers import ResultsSetPagination, StandardResultsSetPagination
 from .serializers import (BlogSerializer, BlogSerializerReadOnly,
-                          PhotoSerializer, TagSerializer, TopicSerializer)
+                          PhotoSerializer, TagSerializer, TopicSerializer, TagPublicSerializer, TopicPublicSerializer)
 import cloudinary
 
 #Tag admin
@@ -37,7 +37,7 @@ class TagPublicViewSet(generics.GenericAPIView):
 
     def get(self, request, format=None):
         query = self.filter_queryset(self.get_queryset())
-        serializer = TagSerializer(query, many=True)
+        serializer = TagPublicSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TagRemoveAllViewSet(APIView):
@@ -327,7 +327,7 @@ class TopicPublicViewSet(generics.ListAPIView):
 
     def get(self, request, format=None):
         query = self.filter_queryset(self.get_queryset())
-        serializer = TopicSerializer(query, many=True)
+        serializer = TopicPublicSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
