@@ -39,8 +39,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
     "https://www.hagiakinh.xyz",
+    "https://www.hagiakinh.me",
     "https://hagiakinh.xyz",
+    "https://hagiakinh.me",
     "https://api.hagiakinh.xyz",
+    "https://api.hagiakinh.me",
     "https://giakinh-blog.herokuapp.com",
 ]
 
