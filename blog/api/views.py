@@ -390,7 +390,7 @@ class BlogAdminTrashViewSet(generics.GenericAPIView):
     def get(self, request, format=None):
         query = self.filter_queryset(self.get_queryset())
         paginate_queryset = self.paginate_queryset(query)
-        serializer = BlogSerializerReadOnly(paginate_queryset, many=True)
+        serializer = BlogAdminSerializerReadOnly(paginate_queryset, many=True)
         return self.get_paginated_response(serializer.data)
     
     def post(self, request, format=None):
@@ -416,7 +416,7 @@ class BlogDetailViewSet(APIView):
         try:
             blog = Blog.objects.get(slug=slug)
             if blog:
-                serializer = BlogSerializerReadOnly(blog)
+                serializer = BlogAdminSerializerReadOnly(blog)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"error": "Không tìm thấy topic"},status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -426,7 +426,7 @@ class BlogRemoveAllViewSet(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         blogs = Blog.objects.filter(is_remove=False)
-        serializer = TopicSerializer(blogs, many=True)
+        serializer = BlogAdminSerializerReadOnly(blogs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     def post(self, request, format=None):
@@ -450,7 +450,7 @@ class BlogRemoveForeverViewSet(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request, format=None):
         blogs = Blog.objects.filter(is_remove=True)
-        serializer = TopicSerializer(blogs, many=True)
+        serializer = BlogAdminSerializerReadOnly(blogs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     def post(self, request, format=None):
