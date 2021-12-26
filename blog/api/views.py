@@ -363,7 +363,7 @@ class BlogPublicViewSet(generics.GenericAPIView):
 class BlogAdminViewSet(generics.GenericAPIView):
     queryset = Blog.objects.filter(is_remove=False).order_by('-created_at')
     permission_classes = [IsAdminUser]
-    pagination_class = ResultsSetPagination
+    pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filter_class =BlogFilter
     filterset_fields = "__all__"
@@ -380,7 +380,7 @@ class BlogAdminViewSet(generics.GenericAPIView):
 class BlogAdminTrashViewSet(generics.GenericAPIView):
     queryset = Blog.objects.filter(is_remove=True).order_by('-updated_at')
     permission_classes = [IsAdminUser]
-    pagination_class = ResultsSetPagination
+    pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filter_class =BlogFilter
     filterset_fields = "__all__"
