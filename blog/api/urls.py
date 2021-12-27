@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/getBlogs/trash/', views.BlogAdminTrashViewSet.as_view(), name='blogs_trash_admin'),
     path('admin/blogs/remove/', views.BlogRemoveAllViewSet.as_view(), name='blog_remove'),
     path('admin/blogs/remove-forever/', views.BlogRemoveForeverViewSet.as_view(), name='blog_remove-forever'),
+    path('blogs/<slug:slug>/', views.BlogPublicDetailViewSet.as_view(), name='detail_blogs'),
     path('blogs/', views.BlogPublicViewSet.as_view(), name='blogs'),
     
     #Topic
