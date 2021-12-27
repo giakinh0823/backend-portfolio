@@ -6,7 +6,7 @@ class BlogFilter(django_filters.FilterSet):
     class Meta:
         model = Blog
         fields = ['id', 'title', 'slug', 'created_at', 'updated_at',
-                  'topics', 'topics__name', 'tags', 'tags__name', 'author__username']
+                  'topics', 'topics__name', 'topics__slug', 'tags', 'tags__name', 'author__username']
 
 
 class TopicFilter(django_filters.FilterSet):
