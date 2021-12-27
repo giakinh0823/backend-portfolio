@@ -5,7 +5,7 @@ from blog.models import Blog, Topic, Photo, Tag
 class BlogFilter(django_filters.FilterSet):
     class Meta:
         model = Blog
-        fields = ['title', 'slug', 'created_at', 'updated_at', 'topics', 'author', 'is_public', 'is_remove']
+        fields = ['id','title', 'slug', 'created_at', 'updated_at', 'topics__name', 'tags__name','author__username']
 
 
 class TopicFilter(django_filters.FilterSet):
