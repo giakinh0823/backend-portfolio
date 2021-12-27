@@ -347,10 +347,11 @@ class BlogPublicViewSet(generics.GenericAPIView):
     queryset = Blog.objects.filter(is_remove=False, is_public=True)
     permission_classes = [AllowAny]
     pagination_class = ResultsSetPagination
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filter_class =BlogFilter
     filterset_fields = "__all__"
     ordering_fields = ['title', 'created_at']
+    search_fields = ['title']
     
 
     def get(self, request, format=None):
