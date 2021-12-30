@@ -109,6 +109,7 @@ CHANNEL_LAYERS = {
         'CONFIG': {
             # "hosts": [('redis', 6379)],
             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            # "hosts": ["redis://:p769ceb4142f3c372a0b6726f6eb50149da7c3326a1b89c025ba486b86c8da704@ec2-54-204-185-228.compute-1.amazonaws.com:25019"],
         },
     },
 }
