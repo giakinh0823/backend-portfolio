@@ -23,7 +23,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include('register.api.urls')),
     path('api/', include('blog.api.urls')),
-    path('', include('chatbot.urls')),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
