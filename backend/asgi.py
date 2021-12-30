@@ -18,7 +18,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
 
 
-application = get_asgi_application()
+# application = get_asgi_application()
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
