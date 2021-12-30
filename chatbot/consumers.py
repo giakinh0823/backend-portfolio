@@ -14,7 +14,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             group = await sync_to_async(Group.objects.get)(id=self.room_name)
         except:
-            group = await sync_to_async(Group.objects.create)(id=self.room_name)
+            user = await  sync_to_async(User.objects.get)(username='giakinh0823')
+            group = await sync_to_async(Group.objects.create)(id=self.room_name, user_1=user)
             
         self.group = group
         
@@ -41,10 +42,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         try:
             user = data_json['user']
-            user = await  sync_to_async(User.objects.get)(id=user['id'])
+            user = await  sync_to_async(User.objects.get)(id=user['id'])    
             message = await sync_to_async(Message.objects.create)(group=self.group, user=user, message=message)
         except:
             user = await sync_to_async(User.objects.create)(username=f'user-{self.room_name}')
+            self.group.user_2 = user
+            self.group.save()
             message = await sync_to_async(Message.objects.create)(group=self.group, user=user, message=message,is_client=True)
         
         user_dict = {
