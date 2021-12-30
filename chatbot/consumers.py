@@ -4,6 +4,9 @@ from .models import Group, Message
 from django.contrib.auth.models import User
 from asgiref.sync import sync_to_async
 import uuid
+from datetime import datetime
+from django.db.models import Q
+
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -13,6 +16,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         try:
             group = await sync_to_async(Group.objects.get)(id=self.room_name)
+            users = await sync_to_async(group.users.all)()
         except:
             group = None
             await self.channel_layer.group_send(
@@ -26,6 +30,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
         
         self.group = group
+        self.users = users
 
         if group:
         # Join room group
@@ -51,11 +56,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data_json = json.loads(text_data)
         message = data_json['message']
+        type_message = data_json['type_message']
 
         try:
             user = data_json['user']
             user = await sync_to_async(User.objects.get)(id=user['id'])
-            message = await sync_to_async(Message.objects.create)(group=self.group, user=user, message=message, is_client=(not user.is_superuser))
+            message = await sync_to_async(Message.objects.create)(group=self.group, user=user, message=message, is_client=(not user.is_superuser), type_message=type_message)
         except:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -83,12 +89,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'data': {
                     "user": user_dict,
                     "message": message.message,
+                    "type_message": message.type_message,
                     "id": str(message.id),
                     "created_at": message.created_at.strftime("%d/%m/%Y %H:%M:%S"),
                     "is_client": message.is_client,
                 }
             }
         )
+        users = await sync_to_async(self.users.all)()
+        noti_users = await sync_to_async(users.filter)(~Q(id=user.id))
+        await sync_to_async(self.set_noti)(noti_users, user)
+        self.group.created_at = datetime.now()
+        await sync_to_async(self.group.save)()
+        
+    def set_noti(self, noti_users, user):
+        self.group.notis.remove(user)
+        self.group.notis.add(*noti_users)
+        self.group.save()
 
     # Receive message from room group
     async def chat_message(self, event):

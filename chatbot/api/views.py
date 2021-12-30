@@ -14,6 +14,7 @@ from .serializers import GroupAdminSerializer, GroupPublicSerializer, MessagePub
 from chatbot.models import Group, Message
 from rest_framework_simplejwt.tokens import AccessToken
 import uuid
+from django.db.models import Q
 
 # Tag admin
 
@@ -48,14 +49,25 @@ class ChatbotGroupAdminViewSet(viewsets.ModelViewSet):
 
 
 class ChatbotGroupAdminCustomViewSet(generics.GenericAPIView):
-    queryset = Group.objects.filter(is_remove=False).order_by('-created_at')
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = "__all__"
     ordering_fields = ["id", "created_at"]
+    
+    def get_user(self, access_token):
+        try:
+            access_token_obj = AccessToken(access_token)
+            user_id=access_token_obj['user_id']
+            return user_id
+        except:
+            return None
 
     def get(self, request, format=None):
-        groups = self.get_queryset()
+        access_token = request.headers['Authorization'].replace("Bearer","").strip()
+        user_id = self.get_user(access_token)
+        print(user_id)
+        user = User.objects.get(id=user_id)
+        groups = Group.objects.filter(is_remove=False, users__in=[user]).order_by('-created_at')
         query = self.filter_queryset(groups)
         for group in query:
             messages = Message.objects.filter(group=group, is_remove=False)
@@ -67,28 +79,36 @@ class ChatbotGroupAdminCustomViewSet(generics.GenericAPIView):
 class ChatbotGroupDeatailPublicViewSet(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request, id, format=None):
-        try:
-            group = Group.objects.get(id=id, is_remove=False)
-            messages = Message.objects.filter(group=group, is_remove=False)
-            group.messages = messages
-            serializer = GroupPublicSerializer(group)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Group.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    # def get(self, request, id, format=None):
+    #     try:
+    #         group = Group.objects.get(id=id, is_remove=False)
+    #         messages = Message.objects.filter(group=group, is_remove=False)
+    #         group.messages = messages
+    #         serializer = GroupPublicSerializer(group)
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     except Group.DoesNotExist:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, id, format=None):
         try:
             data = request.data
-            user_id = data['user_id']
-            group = Group.objects.get(id=id, is_remove=False)
-            user_in_group = group.users.all(id=user_id)
-            if user_in_group:
-                messages = Message.objects.filter(group=group, is_remove=False)
-                group.messages = messages
-                serializer = GroupPublicSerializer(group)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response({"error": "Không tìm thấy user"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                user_id = data['user_id']
+                group = Group.objects.get(id=id, is_remove=False)
+                user = User.objects.get(id=user_id)
+                user_in_group = group.users.all()
+                user_in_group = user_in_group.filter(id=user_id)
+                if user_in_group:
+                    group.notis.remove(user)
+                    group.save()
+                    messages = Message.objects.filter(group=group, is_remove=False)
+                    group.messages = messages
+                    serializer = GroupPublicSerializer(group)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({"error": "Không tìm thấy user"}, status=status.HTTP_404_NOT_FOUND)
+            except:
+                user_id = None
+                return Response({"error": "Đang tìm user"}, status=status.HTTP_404_NOT_FOUND)
         except Group.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

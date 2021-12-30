@@ -26,11 +26,12 @@ class MessageAdminSerializer(serializers.ModelSerializer):
 
 class GroupPublicSerializer(serializers.ModelSerializer):
     users = UserPublicSerializer(many=True, read_only=True)
+    notis = UserPublicSerializer(many=True, read_only=True)
     id = serializers.UUIDField(format="hex_verbose")
     messages = MessagePublicGroupSerializer(many=True, read_only=True)
     class Meta:
         model = Group
-        fields = ("id", "users", "is_bot_run", "messages")
+        fields = ("id", "users", "is_bot_run", "messages", "notis", "is_active")
 
 
 class MessagePublicSerializer(serializers.ModelSerializer):
