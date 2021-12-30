@@ -10,7 +10,12 @@ router.register(r'group_messages', views.ChatbotGroupAdminViewSet, basename='adm
 
 
 urlpatterns = [
-    path('messages/', views.ChatbotsMessagePublicViewSet.as_view(), name='chatbots_message'),
-    path('groups/', views.ChatbotGroupPublicViewSet.as_view(), name='chatbots_groups'),
+    # path('messages/', views.ChatbotsMessagePublicViewSet.as_view(), name='chatbots_message'),
+    path('chatbots/join/', views.ChatbotGroupJoinViewSet.as_view(), name='chatbots_groups_join'),
+    path('admin/chatbots/join/', views.ChatbotGroupJoinViewSet.as_view(), name='chatbots_groups_join'),
+    path('chatbots/<str:id>/', views.ChatbotGroupDeatailPublicViewSet.as_view(), name='chatbots_groups_detail'),
+    path('admin/chatbots/<str:id>/', views.ChatbotGroupDeatailPublicViewSet.as_view(), name='chatbots_groups_detail'),
+    path('admin/chatbots/', views.ChatbotGroupAdminCustomViewSet.as_view(), name='chatbots_groups'),
+    path('chatbots/', views.ChatbotGroupAdminCustomViewSet.as_view(), name='chatbots_groups'),
     path('admin/', include(router.urls)),
 ]

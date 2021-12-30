@@ -4,7 +4,14 @@ from register.api.serializers import UserSerializer, UserPublicSerializer
 from register.api.serializers import UserPublicSerializer
 
 
+class MessagePublicGroupSerializer(serializers.ModelSerializer):
+    user = UserPublicSerializer()
+    class Meta:
+        model = Message
+        fields = ("id", "message", "is_client", "created_at", "user")
+
 class GroupAdminSerializer(serializers.ModelSerializer):
+    messages = MessagePublicGroupSerializer(many=True, read_only=True)
     class Meta:
         model = Group
         fields = "__all__"
@@ -14,12 +21,17 @@ class MessageAdminSerializer(serializers.ModelSerializer):
         model = Message
         fields = "__all__"
         
+
+
+
 class GroupPublicSerializer(serializers.ModelSerializer):
-    user_1 = UserPublicSerializer()
-    user_2 = UserPublicSerializer()
+    users = UserPublicSerializer(many=True, read_only=True)
+    id = serializers.UUIDField(format="hex_verbose")
+    messages = MessagePublicGroupSerializer(many=True, read_only=True)
     class Meta:
         model = Group
-        fields = ("id", "user_1", "user_2", "is_bot_run")
+        fields = ("id", "users", "is_bot_run", "messages")
+
 
 class MessagePublicSerializer(serializers.ModelSerializer):
     user = UserPublicSerializer()
@@ -27,3 +39,4 @@ class MessagePublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ("id", "message", "is_client", "created_at", "user", "group")
+        

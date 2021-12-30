@@ -59,7 +59,10 @@ class UserFromTokenViewSet(APIView):
             
     
     def post(self, request, format=None):
-        access_token = request.data["access"]
+        try:
+            access_token = request.data["access"]
+        except:
+            return Response({"error": "Không thể xác thực người dùng"}, status=status.HTTP_401_UNAUTHORIZED)
         if access_token:
             userId = self.get_user(access_token)
             if userId:
