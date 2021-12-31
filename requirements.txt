@@ -1,7 +1,7 @@
 channels==3.0.4
 channels-redis==3.3.1
 cloudinary==1.28.0
-Django==3.2.10
+Django==4.0
 django-autoslug==1.9.8
 django-cors-headers==3.10.1
 django-filter==21.1
@@ -22,4 +22,4 @@ wheel==0.37.1
 cython==0.29.26
 setuptools==60.1.1
 uuid==1.30
-asgiref==3.3.4
+asgiref==3.4.1
