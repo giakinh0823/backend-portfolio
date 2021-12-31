@@ -65,7 +65,6 @@ class ChatbotGroupAdminCustomViewSet(generics.GenericAPIView):
     def get(self, request, format=None):
         access_token = request.headers['Authorization'].replace("Bearer","").strip()
         user_id = self.get_user(access_token)
-        print(user_id)
         user = User.objects.get(id=user_id)
         groups = Group.objects.filter(is_remove=False, users__in=[user]).order_by('-created_at')
         query = self.filter_queryset(groups)
@@ -126,13 +125,14 @@ class ChatbotGroupJoinViewSet(APIView):
             except:
                 user = None
             if user:
-                group.users.add(request.user)
+                group.users.add(user)
                 group.save()
             else:
-                user = User.objects.create(username=str(uuid.uuid4()))
-                group.users.add(request.user)
+                users = User.objects.all()
+                user = User.objects.create(username=str(uuid.uuid4()), first_name=str(len(users)), last_name="user")
+                group.users.add(user)
                 group.save()
 
-            return Response({"chatbot_id": str(group.id), "user": str(user.username)}, status=status.HTTP_200_OK)
+            return Response({"chatbot_id": str(group.id), "user_id": str(user.id)}, status=status.HTTP_200_OK)
         except Group.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
