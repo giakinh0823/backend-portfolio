@@ -22,4 +22,4 @@ wheel==0.37.1
 cython==0.29.26
 setuptools==60.1.1
 uuid==1.30
-asgiref==3.3.4
+asgiref==3.4.1
