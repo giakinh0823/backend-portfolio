@@ -2,6 +2,12 @@ from chatterbot import ChatBot
 from chatterbot.ext.django_chatterbot import settings
 from chatterbot.logic import LogicAdapter
 
+import en_core_web_sm
+import spacy
+en_core_web_sm.load()
+spacy.load('en_core_web_sm')
+spacy.load('en')
+
 class Chatbot:
     def __init__(self):
         self.chatbot = ChatBot(**settings.CHATTERBOT)
