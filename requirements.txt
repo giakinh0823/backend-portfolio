@@ -35,4 +35,3 @@ celery
 django-celery-results
 celery[redis]
 redis
-en-core-web-sm
