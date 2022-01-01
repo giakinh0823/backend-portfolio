@@ -21,6 +21,10 @@ list_trainer = ListTrainer(bot.chatbot)
 list_trainer.train([
     "Hi",
     "Chào bạn! Tôi là trợ lý ảo của Hà Gia Kính. Tôi có thể giúp gì cho bạn?",
+    "What is your name?",
+    "My name is Giakinh-bot",
+    "How old are you?",
+    "Tôi mới được 1 tuổi",
 ])
 
 

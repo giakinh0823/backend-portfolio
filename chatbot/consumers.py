@@ -206,7 +206,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             bot_support.delay(message.id, text)
 
     def check_connect(self):
-        is_connect_admin = self.users.filter(username="giakinh0823").exists()
+        if self.users:
+            is_connect_admin = self.users.filter(username="giakinh0823").exists()
+        else:
+            is_connect_admin = False
         if not is_connect_admin:
             user_admin = User.objects.get(username="giakinh0823")
             self.group.users.add(user_admin)
