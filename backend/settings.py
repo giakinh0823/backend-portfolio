@@ -126,7 +126,7 @@ CHATTERBOT = {
         'chatterbot.preprocessors.clean_whitespace'
     ],
     # 'database_uri': 'sqlite:///db.sqlite3',
-    'database_uri': 'postgres://flqgiexzapkitb:546945a6c08434a898e6013b2385f559d0ff40583f49da63bab7031ef3a82e71@ec2-3-223-39-179.compute-1.amazonaws.com:5432/dcvq8h2f94d0db',
+    'database_uri': 'postgres://sqhvhagnqfxmox:dd9ecfc44fcbfd1f06b8abd448b9372f2d06e7cca968a846558368daef0f263c@ec2-3-230-219-251.compute-1.amazonaws.com:5432/dcr266lgp194uj',
     'response_selection_method': get_most_frequent_response,
 }
 
