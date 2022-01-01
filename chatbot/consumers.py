@@ -196,15 +196,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await sync_to_async(self.set_noti)(noti_users, user)
         self.group.created_at = datetime.now()
         await sync_to_async(self.group.save)()
-        
+
         text = message.message
-        
+
         if not user.is_superuser and self.group.is_bot_run:
             user = await sync_to_async(User.objects.get)(username="giakinh0823")
             message = await sync_to_async(Message.objects.create)(
                 group=self.group, user=user, is_client=False, type_message="string")
-            bot_support.delay(message.id, text)   
-        
+            bot_support.delay(message.id, text)
 
     def check_connect(self):
         is_connect_admin = self.users.filter(username="giakinh0823").exists()
@@ -213,7 +212,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.group.users.add(user_admin)
             self.group.save()
             message = Message.objects.create(
-                group=self.group, user=user_admin, message="Chào bạn đến với trang web của Hà Gia Kính!", is_client=False, type_message="string")
+                group=self.group, user=user_admin, message="Xin chào ! Tôi là một con bot khá ngu ngốc của Hà Gia Kính. Bạn có thể nói một vài điều gì đó để xem mức độ ngu ngộc của mình như thế nào! Cảm ơn.", is_client=False, type_message="string")
             return message
         return None
 

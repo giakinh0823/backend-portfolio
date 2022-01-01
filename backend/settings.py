@@ -78,7 +78,7 @@ INSTALLED_APPS = [
 
 import logging
 
-def get_random_response(input_statement, response_list):
+def get_most_frequent_response(input_statement, response_list, storage=None):
     """
     :param input_statement: A statement, that closely matches an input to the chat bot.
     :type input_statement: Statement
@@ -86,15 +86,32 @@ def get_random_response(input_statement, response_list):
     :param response_list: A list of statement options to choose a response from.
     :type response_list: list
 
-    :return: Choose a random response from the selection.
+    :param storage: An instance of a storage adapter to allow the response selection
+                    method to access other statements if needed.
+    :type storage: StorageAdapter
+
+    :return: The response statement with the greatest number of occurrences.
     :rtype: Statement
     """
-    from random import choice
+    matching_response = None
+    occurrence_count = -1
+
     logger = logging.getLogger(__name__)
-    logger.info(u'Selecting a response from list of {} options.'.format(
-        len(response_list)
-    ))
-    return choice(response_list)
+    logger.info('Selecting response with greatest number of occurrences.')
+
+    for statement in response_list:
+        count = len(list(storage.filter(
+            text=statement.text,
+            in_response_to=input_statement.text)
+        ))
+
+        # Keep the more common statement
+        if count >= occurrence_count:
+            matching_response = statement
+            occurrence_count = count
+
+    # Choose the most commonly occuring matching response
+    return matching_response
 
 
 CHATTERBOT = {
@@ -108,8 +125,9 @@ CHATTERBOT = {
     'preprocessors': [
         'chatterbot.preprocessors.clean_whitespace'
     ],
-    'database_uri': 'sqlite:///db.sqlite3',
-    'response_selection_method': get_random_response,
+    # 'database_uri': 'sqlite:///db.sqlite3',
+    'database_uri': 'postgres://flqgiexzapkitb:546945a6c08434a898e6013b2385f559d0ff40583f49da63bab7031ef3a82e71@ec2-3-223-39-179.compute-1.amazonaws.com:5432/dcvq8h2f94d0db',
+    'response_selection_method': get_most_frequent_response,
 }
 
 
