@@ -1,9 +1,7 @@
 #app/__init__.py
 from __future__ import absolute_import, unicode_literals
 
-import en_core_web_sm
 import spacy
-en_core_web_sm.load()
 spacy.load('en')
 
 
