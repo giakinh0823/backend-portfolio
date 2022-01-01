@@ -197,7 +197,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.group.created_at = datetime.now()
         await sync_to_async(self.group.save)()
         
-        if user.username != "giakinh0823" and self.group.is_bot_run:
+        if not user.is_superuser and self.group.is_bot_run:
             bot_support.delay(self.group.id, message.message)        
         
 
