@@ -212,7 +212,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.group.users.add(user_admin)
             self.group.save()
             message = Message.objects.create(
-                group=self.group, user=user_admin, message="Xin chào ! Tôi là một con bot khá ngu ngốc của Hà Gia Kính. Bạn có thể nói một vài điều gì đó để xem mức độ ngu ngộc của mình như thế nào! Cảm ơn.", is_client=False, type_message="string")
+                group=self.group, user=user_admin, message="Xin chào ! Tôi là một con bot khá ngu ngốc của Hà Gia Kính. Bạn có thể nói một vài điều gì đó để xem mức độ ngu ngốc của tôi như thế nào! Cảm ơn.", is_client=False, type_message="string")
             return message
         return None
 
