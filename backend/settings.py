@@ -125,8 +125,7 @@ CHATTERBOT = {
     'preprocessors': [
         'chatterbot.preprocessors.clean_whitespace'
     ],
-    # 'database_uri': 'sqlite:///db.sqlite3',
-    'database_uri': 'postgres://sqhvhagnqfxmox:dd9ecfc44fcbfd1f06b8abd448b9372f2d06e7cca968a846558368daef0f263c@ec2-3-230-219-251.compute-1.amazonaws.com:5432/dcr266lgp194uj',
+    'database_uri': 'sqlite:///db.sqlite3',
     'response_selection_method': get_most_frequent_response,
 }
 
