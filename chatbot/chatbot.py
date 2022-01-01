@@ -1,9 +1,7 @@
 from chatterbot import ChatBot
 from chatterbot.ext.django_chatterbot import settings
 from chatterbot.logic import LogicAdapter
-from chatbot.chatbot import bot
 from chatterbot.trainers import ListTrainer
-from chatterbot.trainers import ChatterBotCorpusTrainer
 
 import en_core_web_sm
 import spacy
