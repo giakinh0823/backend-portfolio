@@ -197,8 +197,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.group.created_at = datetime.now()
         await sync_to_async(self.group.save)()
         
+        text = message.message
+        
         if not user.is_superuser and self.group.is_bot_run:
-            bot_support.delay(self.group.id, message.message)        
+            user = await sync_to_async(User.objects.get)(username="giakinh0823")
+            message = await sync_to_async(Message.objects.create)(
+                group=self.group, user=user, is_client=False, type_message="string")
+            bot_support.delay(message.id, text)   
         
 
     def check_connect(self):

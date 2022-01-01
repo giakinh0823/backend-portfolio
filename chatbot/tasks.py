@@ -8,25 +8,35 @@ from asgiref.sync import async_to_sync
 import random
 
 @shared_task(name="bot_support")
-def bot_support(group_id, message):
+def bot_support(message_id, text):
+    message = Message.objects.get(id=message_id)
     try:
-        response = bot.get_response(message)
+        response = bot.get_response(text)
         print(response)
-        user = User.objects.get(username="giakinh0823")
-        group = Group.objects.get(id=group_id)
-        message = Message.objects.create(
-            group=group, user=user, message=str(response.text), is_client=False, type_message="string")
+        message.message =str(response.text)
+        message.save()
         user_dict = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
+            "id": message.user.id,
+            "username": message.user.username,
+            "email": message.user.email,
+            "first_name": message.user.first_name,
+            "last_name": message.user.last_name,
         }
-        room_group_name = 'chat_%s' % str(group.id)
+        room_group_name = 'chat_%s' % str(message.group.id)
         send_message(room_group_name, user_dict, message)
         return str(response.text)
     except:
+        message.message ="I am sorry, but I do not understand"
+        message.save()
+        user_dict = {
+            "id": message.user.id,
+            "username": message.user.username,
+            "email": message.user.email,
+            "first_name": message.user.first_name,
+            "last_name": message.user.last_name,
+        }
+        room_group_name = 'chat_%s' % str(message.group.id)
+        send_message(room_group_name, user_dict, message)
         return "I am sorry, but I do not understand."
 
 
