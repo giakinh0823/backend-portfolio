@@ -7,9 +7,12 @@ import uuid
 from datetime import datetime
 from django.db.models import Q
 from chatbot.api.serializers import GroupPublicSerializer
+from .chatbot import bot
+from .tasks import bot_support
 
 
 class UpdateGroupConsumer(AsyncWebsocketConsumer):
+
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'user_%s' % self.room_name
@@ -78,6 +81,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             users = await sync_to_async(group.users.all)()
         except:
             group = None
+            users = None
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -143,6 +147,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data_json = json.loads(text_data)
         message = data_json['message']
+
         type_message = data_json['type_message']
 
         try:
@@ -191,6 +196,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await sync_to_async(self.set_noti)(noti_users, user)
         self.group.created_at = datetime.now()
         await sync_to_async(self.group.save)()
+        
+        if user.username != "giakinh0823" and self.group.is_bot_run:
+            bot_support.delay(self.group.id, message.message)        
+        
 
     def check_connect(self):
         is_connect_admin = self.users.filter(username="giakinh0823").exists()

@@ -10,7 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-
+from django.conf import settings
+from datetime import timedelta
 import django_heroku
 import cloudinary
 from pathlib import Path
@@ -65,10 +66,52 @@ INSTALLED_APPS = [
     'corsheaders',
     'cloudinary',
     'channels',
+    'chatterbot.ext.django_chatterbot',
+    'django_celery_results',
     'blog',
     'register',
     'chatbot',
 ]
+
+
+# chatbot
+
+import logging
+
+def get_random_response(input_statement, response_list):
+    """
+    :param input_statement: A statement, that closely matches an input to the chat bot.
+    :type input_statement: Statement
+
+    :param response_list: A list of statement options to choose a response from.
+    :type response_list: list
+
+    :return: Choose a random response from the selection.
+    :rtype: Statement
+    """
+    from random import choice
+    logger = logging.getLogger(__name__)
+    logger.info(u'Selecting a response from list of {} options.'.format(
+        len(response_list)
+    ))
+    return choice(response_list)
+
+
+CHATTERBOT = {
+    'name': 'Giakinh',
+    'storage_adapter': 'chatterbot.storage.SQLStorageAdapter',
+    'logic_adapters': [
+        'chatterbot.logic.MathematicalEvaluation',
+        # 'chatterbot.logic.TimeLogicAdapter',
+        'chatterbot.logic.BestMatch',
+    ],
+    'preprocessors': [
+        'chatterbot.preprocessors.clean_whitespace'
+    ],
+    'database_uri': 'sqlite:///db.sqlite3',
+    'response_selection_method': get_random_response,
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -107,8 +150,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            # "hosts": [('redis', 6379)],
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [('redis', 6379)],
+            # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
             # "hosts": ["redis://:p769ceb4142f3c372a0b6726f6eb50149da7c3326a1b89c025ba486b86c8da704@ec2-54-204-185-228.compute-1.amazonaws.com:25019"],
         },
     },
@@ -218,10 +261,8 @@ REST_FRAMEWORK = {
 }
 
 
-#JWT
+# JWT
 
-from datetime import timedelta
-from django.conf import settings
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
@@ -268,3 +309,21 @@ django_heroku.settings(locals())
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
+# celery
+REDIS_HOST = 'redis'
+REDIS_PORT = '6379'
+
+# CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_CACHE_BACKEND = 'django-cache'
+
+CACHES = {
+    "default": {
+         "BACKEND": "redis_cache.RedisCache",
+         "LOCATION": os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'),
+    }
+}

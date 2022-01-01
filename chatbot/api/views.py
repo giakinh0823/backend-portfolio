@@ -15,7 +15,6 @@ from chatbot.models import Group, Message
 from rest_framework_simplejwt.tokens import AccessToken
 import uuid
 from django.db.models import Q
-
 # Tag admin
 
 
