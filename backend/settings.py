@@ -150,8 +150,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
-            # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            # "hosts": [('redis', 6379)],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
             # "hosts": ["redis://:p769ceb4142f3c372a0b6726f6eb50149da7c3326a1b89c025ba486b86c8da704@ec2-54-204-185-228.compute-1.amazonaws.com:25019"],
         },
     },
@@ -319,7 +319,6 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_CACHE_BACKEND = 'django-cache'
 
 CACHES = {
     "default": {

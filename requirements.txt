@@ -34,4 +34,4 @@ nltk==3.6.7
 celery
 django-celery-results
 celery[redis]
-redis
+redis==4.1.0
