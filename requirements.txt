@@ -35,3 +35,4 @@ celery
 django-celery-results
 celery[redis]
 redis
+./en_core_web_sm-3.2.0.tar.gz
