@@ -340,4 +340,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_SEND_TASK_SENT_EVENT = True
 CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
 CELERY_ENABLE_UTC = True
+
+CELERY_REDBEAT_REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/1"
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
