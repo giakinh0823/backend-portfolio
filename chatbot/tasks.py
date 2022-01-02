@@ -28,7 +28,8 @@ def bot_support(message_id, text):
     try:
         response = bot.get_response(text)
         print(response)
-        message.message = translator.translate(str(response.text), dest='vi').text
+        message_process = translator.translate(str(response.text), dest='vi').text if "Fuck" not in response.text and "fuck" not in response.text else  response.text
+        message.message = message_process
         message.save()
         user_dict = {
             "id": message.user.id,
