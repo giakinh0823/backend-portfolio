@@ -1,5 +1,8 @@
 
 from celery import shared_task
+from celery.schedules import crontab
+from backend.celery import app
+
 from .chatbot import bot, LogicAdapter
 from django.contrib.auth.models import User
 from .models import Message, Group
@@ -7,8 +10,15 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import random
 from googletrans import Translator
+
  
 translator = Translator()
+
+
+@shared_task(name="bot_train")
+def is_active_website():
+    bot.train()
+    return "Train bot sucessfully"
 
 @shared_task(name="bot_support")
 def bot_support(message_id, text):

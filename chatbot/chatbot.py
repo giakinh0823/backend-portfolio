@@ -2,6 +2,7 @@ from chatterbot import ChatBot
 from chatterbot.ext.django_chatterbot import settings
 from chatterbot.logic import LogicAdapter
 from chatterbot.trainers import ListTrainer
+from .models import Message, Group
 
 import en_core_web_sm
 import spacy
@@ -19,10 +20,14 @@ class Chatbot:
         return bot_response
 
     def train(self):
-
-        list_trainer = ListTrainer(bot.chatbot)
-
-        list_trainer.train([])
+        list_trainer = ListTrainer(self.chatbot)
+        groups = Group.objects.all()
+        for group in groups:
+            list_message = []
+            messages = Message.objects.filter(group=group).order_by('-created_at')
+            for message in messages:
+                list_message.append(str(message.message))
+            list_trainer.train(list_message)
 
 
 bot = Chatbot()

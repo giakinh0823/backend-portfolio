@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'channels',
     'chatterbot.ext.django_chatterbot',
     'django_celery_results',
+    'django_celery_beat',
     'blog',
     'register',
     'chatbot',
@@ -336,3 +337,7 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+CELERY_SEND_TASK_SENT_EVENT = True
+CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
+CELERY_ENABLE_UTC = True
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

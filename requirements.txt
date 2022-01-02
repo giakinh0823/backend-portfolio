@@ -36,3 +36,4 @@ django-celery-results
 celery[redis]
 redis==4.1.0
 googletrans==4.0.0-rc1
+django-celery-beat==2.2.1

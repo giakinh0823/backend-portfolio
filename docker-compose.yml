@@ -23,7 +23,16 @@ services:
 
   celery:
     build: .
-    command: celery -A backend worker -l info
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && celery -A backend worker -l info"
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+      - redis
+
+  celery-beat:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && celery -A backend beat -l info"
     volumes:
       - .:/code
     depends_on:
