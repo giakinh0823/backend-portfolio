@@ -114,6 +114,24 @@ def get_most_frequent_response(input_statement, response_list, storage=None):
     # Choose the most commonly occuring matching response
     return matching_response
 
+def get_random_response(input_statement, response_list):
+    """
+    :param input_statement: A statement, that closely matches an input to the chat bot.
+    :type input_statement: Statement
+
+    :param response_list: A list of statement options to choose a response from.
+    :type response_list: list
+
+    :return: Choose a random response from the selection.
+    :rtype: Statement
+    """
+    from random import choice
+    logger = logging.getLogger(__name__)
+    logger.info(u'Selecting a response from list of {} options.'.format(
+        len(response_list)
+    ))
+    return choice(response_list)
+
 
 CHATTERBOT = {
     'name': 'Giakinh',
@@ -127,7 +145,7 @@ CHATTERBOT = {
         'chatterbot.preprocessors.clean_whitespace'
     ],
     'database_uri': 'sqlite:///db.sqlite3',
-    'response_selection_method': get_most_frequent_response,
+    'response_selection_method': get_random_response,
 }
 
 
