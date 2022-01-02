@@ -2,7 +2,6 @@ from chatterbot import ChatBot
 from chatterbot.ext.django_chatterbot import settings
 from chatterbot.logic import LogicAdapter
 
-
 import en_core_web_sm
 import spacy
 en_core_web_sm.load()
@@ -17,8 +16,7 @@ class Chatbot:
     def get_response(self, text):
         bot_response = self.chatbot.get_response(text)
         return bot_response
-
-
+       
 
 bot = Chatbot()
 

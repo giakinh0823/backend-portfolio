@@ -11,14 +11,28 @@ from asgiref.sync import async_to_sync
 import random
 from googletrans import Translator
 from random import choice
- 
+from chatterbot.trainers import ListTrainer
+from .models import Message, Group
+
+
 translator = Translator()
 
 
 @shared_task(name="bot_train")
 def is_active_website():
     print("Start training bot")
+    list_trainer = ListTrainer(bot.chatbot)
+    groups = Group.objects.all()
+    for group in groups:
+        list_message = []
+        messages = Message.objects.filter(group=group).order_by('-created_at')
+        for message in messages:
+            if message.is_client:
+                list_message.append(str(message.message))
+        list_trainer.train(list_message)
+
     return "Train bot sucessfully"
+
 
 @shared_task(name="bot_support")
 def bot_support(message_id, text):
@@ -28,7 +42,8 @@ def bot_support(message_id, text):
     try:
         response = bot.get_response(text_translate)
         print(response)
-        message_process = translator.translate(str(response.text), dest='vi').text if "Fuck" not in response.text and "fuck" not in response.text else  response.text
+        message_process = translator.translate(str(
+            response.text), dest='vi').text if "Fuck" not in response.text and "fuck" not in response.text and len(str(response.text).split(" ")) > 3 else response.text
         message.message = message_process
         message.save()
         user_dict = {
@@ -42,7 +57,7 @@ def bot_support(message_id, text):
         send_message(room_group_name, user_dict, message)
         return str(response.text)
     except:
-        message.message ="Tôi xin lỗi, nhưng tôi không hiểu ý bạn"
+        message.message = "Tôi xin lỗi, nhưng tôi không hiểu ý bạn"
         message.save()
         user_dict = {
             "id": message.user.id,

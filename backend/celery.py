@@ -23,9 +23,9 @@ app.autodiscover_tasks()
 def debug_task(self):
     print(f'Request: {self.request!r}')
     
-# app.conf.beat_schedule = {
-#     'bot_train': {
-#         'task': 'bot_train',
-#         'schedule': crontab(minute='*/10'),
-#     },
-# }
+app.conf.beat_schedule = {
+    'bot_train': {
+        'task': 'bot_train',
+        'schedule': crontab(minute='*/10'),
+    },
+}

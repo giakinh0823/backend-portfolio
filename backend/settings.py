@@ -145,7 +145,7 @@ CHATTERBOT = {
         'chatterbot.preprocessors.clean_whitespace'
     ],
     'database_uri': 'sqlite:///db.sqlite3',
-    'response_selection_method': get_random_response,
+    'response_selection_method': get_most_frequent_response,
 }
 
 
