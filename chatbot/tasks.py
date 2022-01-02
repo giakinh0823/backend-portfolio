@@ -10,7 +10,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import random
 from googletrans import Translator
-
+from random import choice
  
 translator = Translator()
 
@@ -24,10 +24,13 @@ def is_active_website():
 @shared_task(name="bot_support")
 def bot_support(message_id, text):
     message = Message.objects.get(id=message_id)
-    text = translator.translate(text, dest='en').text
+    text_translate = translator.translate(text, dest='en').text
     print(text)
     try:
-        response = bot.get_response(text)
+        vi_response = bot.get_response(text)
+        response = bot.get_response(text_translate)
+        if vi_response:
+            response = choice([vi_response,response])
         print(response)
         message_process = translator.translate(str(response.text), dest='vi').text if "Fuck" not in response.text and "fuck" not in response.text else  response.text
         message.message = message_process
