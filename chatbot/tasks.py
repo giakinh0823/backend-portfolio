@@ -17,6 +17,7 @@ translator = Translator()
 
 @shared_task(name="bot_train")
 def is_active_website():
+    print("Start training bot")
     bot.train()
     return "Train bot sucessfully"
 
