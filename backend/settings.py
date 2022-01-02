@@ -9,8 +9,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import django
-django.setup()
 
 from django.conf import settings
 from datetime import timedelta
@@ -189,7 +187,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             # "hosts": [('redis', 6379)],
-            "hosts": [os.environ.get('REDIS_URL', 'redis://redis:6379')],
+            "hosts": [os.environ.get('REDISCLOUD_URL', 'redis://redis:6379')],
             # "hosts": ["redis://:p769ceb4142f3c372a0b6726f6eb50149da7c3326a1b89c025ba486b86c8da704@ec2-54-204-185-228.compute-1.amazonaws.com:25019"],
         },
     },
@@ -352,9 +350,9 @@ REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 
 # CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
-CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0')
-CELERY_BACKEND_URL = os.environ.get("REDIS_URL",  'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/1')
-CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0')
+CELERY_BROKER_URL = os.environ.get('REDISCLOUD_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0')
+CELERY_BACKEND_URL = os.environ.get("REDISCLOUD_URL",  'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/1')
+CELERY_RESULT_BACKEND = os.environ.get('REDISCLOUD_URL', 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -362,5 +360,5 @@ CELERY_SEND_TASK_SENT_EVENT = True
 CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
 CELERY_ENABLE_UTC = True
 
-CELERY_REDBEAT_REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/1"
+CELERY_REDBEAT_REDIS_URL = os.environ.get("REDISCLOUD_URL") or "redis://localhost:6379/1"
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
