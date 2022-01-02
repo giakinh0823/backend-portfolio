@@ -27,10 +27,7 @@ def bot_support(message_id, text):
     text_translate = translator.translate(text, dest='en').text
     print(text)
     try:
-        vi_response = bot.get_response(text)
         response = bot.get_response(text_translate)
-        if vi_response:
-            response = choice([vi_response,response])
         print(response)
         message_process = translator.translate(str(response.text), dest='vi').text if "Fuck" not in response.text and "fuck" not in response.text else  response.text
         message.message = message_process
