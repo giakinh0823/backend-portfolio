@@ -26,6 +26,6 @@ def debug_task(self):
 app.conf.beat_schedule = {
     'bot_train': {
         'task': 'bot_train',
-        'schedule': crontab(minute='*/10'),
+        'schedule': crontab(minute='*/5'),
     },
 }
