@@ -153,46 +153,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             user = data_json['user']
             user = await sync_to_async(User.objects.get)(id=user['id'])
-            message_object = await sync_to_async(Message.objects.create)(group=self.group, user=user, message=message, is_client=(not user.is_superuser), type_message=type_message)
-            user_dict = {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-            }
-
-            # Send message to room group
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'data': {
-                        "user": user_dict,
-                        "message": message_object.message,
-                        "type_message": message_object.type_message,
-                        "id": str(message_object.id),
-                        "created_at": message_object.created_at.strftime("%d/%m/%Y %H:%M:%S"),
-                        "is_client": message_object.is_client,
-                    }
-                }
-            )
-
-            await sync_to_async(self.check_connect)()
-
-            users = await sync_to_async(self.users.all)()
-            noti_users = await sync_to_async(users.filter)(~Q(id=user.id))
-            await sync_to_async(self.set_noti)(noti_users, user)
-            self.group.created_at = datetime.now()
-            await sync_to_async(self.group.save)()
-
-            text = message.message
-
-            if not user.is_superuser and self.group.is_bot_run:
-                user = await sync_to_async(User.objects.get)(username="giakinh0823")
-                message = await sync_to_async(Message.objects.create)(
-                    group=self.group, user=user, is_client=False, type_message="string")
-                bot_support.delay(message.id, text)
+            message = await sync_to_async(Message.objects.create)(group=self.group, user=user, message=message, is_client=(not user.is_superuser), type_message=type_message)
         except:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -204,10 +165,49 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+        user_dict = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        }
+
+        # Send message to room group
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'data': {
+                    "user": user_dict,
+                    "message": message.message,
+                    "type_message": message.type_message,
+                    "id": str(message.id),
+                    "created_at": message.created_at.strftime("%d/%m/%Y %H:%M:%S"),
+                    "is_client": message.is_client,
+                }
+            }
+        )
+
+        await sync_to_async(self.check_connect)()
+
+        users = await sync_to_async(self.users.all)()
+        noti_users = await sync_to_async(users.filter)(~Q(id=user.id))
+        await sync_to_async(self.set_noti)(noti_users, user)
+        self.group.created_at = datetime.now()
+        await sync_to_async(self.group.save)()
+
+        text = message.message
+
+        if not user.is_superuser and self.group.is_bot_run:
+            user = await sync_to_async(User.objects.get)(username="giakinh0823")
+            message = await sync_to_async(Message.objects.create)(
+                group=self.group, user=user, is_client=False, type_message="string")
+            bot_support.delay(message.id, text)
+
     def check_connect(self):
         if self.users:
-            is_connect_admin = self.users.filter(
-                username="giakinh0823").exists()
+            is_connect_admin = self.users.filter(username="giakinh0823").exists()
         else:
             is_connect_admin = False
         if not is_connect_admin:
