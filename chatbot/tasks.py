@@ -34,6 +34,12 @@ def is_active_website():
     return "Train bot sucessfully"
 
 
+@shared_task(name="bot_remove")
+def is_active_website():
+    Group.objects.delete()
+    return "Remove group sucessfully"
+
+
 @shared_task(name="bot_support")
 def bot_support(message_id, text):
     message = Message.objects.get(id=message_id)

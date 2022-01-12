@@ -28,4 +28,9 @@ app.conf.beat_schedule = {
         'task': 'bot_train',
         'schedule': crontab(minute='*/5'),
     },
+    'bot_remove': {
+        'task': 'bot_remove',
+        'schedule': crontab(minute=0, hour=0),
+    },
 }
+
